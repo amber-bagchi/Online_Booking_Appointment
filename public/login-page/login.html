@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker – Login</title>
+
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <div class="card">
+      <h2>Welcome Back</h2>
+
+      <form id="loginForm">
+        <div class="input-group">
+          <input type="email" id="email" placeholder=" " required />
+          <label>Email</label>
+          <div class="error" id="emailError">Enter valid email</div>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="password" placeholder=" " required />
+          <label>Password</label>
+          <span class="toggle" onclick="togglePassword()">Show</span>
+          <div class="error" id="passError">Enter password</div>
+        </div>
+
+        <button type="submit">Login</button>
+      </form>
+
+      <div class="bottom-text">
+        Don’t have an account? <a href="../signup-page/signup.html">Sign Up</a>
+      </div>
+    </div>
+
+    <script src="./js/login.js"></script>
+  </body>
+</html>
