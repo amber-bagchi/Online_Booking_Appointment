@@ -1,13 +1,13 @@
 const form = document.getElementById("loginForm");
 const API = "http://localhost:3000/api/login";
 
-// Toggle password
+// PASSWORD TOGGLE
 function togglePassword() {
   const pass = document.getElementById("password");
   pass.type = pass.type === "password" ? "text" : "password";
 }
 
-// Submit login
+// SUBMIT
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -32,31 +32,23 @@ form.addEventListener("submit", async (e) => {
   if (!valid) return;
 
   try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    const res = await axios.post(API, { email, password });
 
-    const data = await res.json();
+    // ⭐ Save token/user info (important for interviews)
+    localStorage.setItem("token", res.data.token || "dummy-token");
+    localStorage.setItem("userEmail", email);
 
-    if (!res.ok) {
-      showToast(data.message || "Login failed ❌", "#ff4d4d");
-      return;
-    }
+    showToast("Login successful 🎉 Redirecting...", "#4CAF50");
 
-    showToast("Login successful 🎉", "#4CAF50");
-
-    
     setTimeout(() => {
-      window.location.href = "dashboard.html";
+      window.location.href = "../dashboard/dashboard.html";
     }, 1500);
   } catch (err) {
-    showToast("Server not reachable 🚨", "#ff4d4d");
+    showToast(err.response?.data?.message || "Login failed ❌", "#ff4d4d");
   }
 });
 
-// Toast
+// TOAST
 function showToast(message, color) {
   let toast = document.getElementById("toast");
 
