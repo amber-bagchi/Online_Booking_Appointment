@@ -34,7 +34,7 @@ form.addEventListener("submit", async (e) => {
   try {
     const res = await axios.post(API, { email, password });
 
-    // ⭐ Save token/user info (important for interviews)
+    
     localStorage.setItem("token", res.data.token || "dummy-token");
     localStorage.setItem("userEmail", email);
 
