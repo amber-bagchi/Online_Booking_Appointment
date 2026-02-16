@@ -9,79 +9,107 @@
   </head>
 
   <body>
-    <!-- NAVBAR -->
+    <!-- ===== NAVBAR ===== -->
     <header class="navbar">
       <div class="logo">💰 Expense Tracker</div>
-
-      <nav>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-      </nav>
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </header>
 
-    <!-- MAIN WRAPPER -->
-    <main class="wrapper">
-      <!-- EXPENSE FORM CARD -->
-      <section class="card form-card">
-        <h2>Add Daily Expense</h2>
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div class="layout">
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar">
+        <button
+          id="txnBtn"
+          class="menu-btn active"
+          onclick="showTransactions()"
+        >
+          📄 Transactions
+        </button>
+        <button id="lbBtn" class="menu-btn" onclick="showLeaderboard()">
+          🏆 Leaderboard
+        </button>
+      </aside>
 
-        <form id="expenseForm">
-          <div class="grid">
-            <input
-              type="number"
-              id="amount"
-              placeholder="Amount spent"
-              required
-            />
+      <!-- ===== CONTENT ===== -->
+      <main class="content">
+        <!-- ===== TRANSACTIONS ===== -->
+        <section id="transactionsSection">
+          <div class="card form-card">
+            <h2>Add Daily Expense</h2>
 
-            <input
-              type="text"
-              id="description"
-              placeholder="Description"
-              required
-            />
+            <form id="expenseForm">
+              <div class="grid">
+                <input
+                  type="number"
+                  id="amount"
+                  placeholder="Amount spent"
+                  required
+                />
+                <input
+                  type="text"
+                  id="description"
+                  placeholder="Description"
+                  required
+                />
+                <input type="date" id="date" required />
 
-            <input type="date" id="date" required />
+                <select id="category" required>
+                  <option value="">Select Category</option>
+                  <option>Food</option>
+                  <option>Petrol</option>
+                  <option>Shopping</option>
+                  <option>Salary</option>
+                  <option>Travel</option>
+                </select>
 
-            <select id="category" required>
-              <option value="">Select Category</option>
-              <option>Food</option>
-              <option>Petrol</option>
-              <option>Shopping</option>
-              <option>Salary</option>
-              <option>Travel</option>
-            </select>
+                <select id="currency">
+                  <option>₹ INR</option>
+                  <option>$ USD</option>
+                  <option>€ Euro</option>
+                  <option>£ Pound</option>
+                </select>
 
-            <select id="currency">
-              <option>₹ INR</option>
-              <option>$ USD</option>
-              <option>€ Euro</option>
-              <option>£ Pound</option>
-            </select>
+                <select id="payment" required>
+                  <option value="">Payment Method</option>
+                  <option>Cash</option>
+                  <option>UPI</option>
+                  <option>Net Banking</option>
+                  <option>Card</option>
+                </select>
+              </div>
 
-            <select id="payment" required>
-              <option value="">Payment Method</option>
-              <option>Cash</option>
-              <option>UPI</option>
-              <option>Net Banking</option>
-              <option>Card</option>
-            </select>
+              <button type="submit" class="add-btn">➕ Add Expense</button>
+            </form>
           </div>
 
-          <button type="submit" class="add-btn">➕ Add Expense</button>
-        </form>
-      </section>
+          <div class="card list-card">
+            <h2>Your Expenses</h2>
+            <ul id="expenseList"></ul>
+          </div>
+        </section>
 
-      <!-- EXPENSE LIST CARD -->
-      <section class="card list-card">
-        <h2>Your Expenses</h2>
-        <ul id="expenseList"></ul>
-      </section>
-    </main>
+        <!-- ===== LEADERBOARD ===== -->
+        <section id="leaderboardSection" style="display: none">
+          <div class="card">
+            <h2>🏆 Leaderboard</h2>
 
-    <!-- AXIOS -->
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>User</th>
+                  <th>Total Spent</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboardBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-    <!-- SCRIPT -->
     <script src="./dashboard.js"></script>
   </body>
 </html>

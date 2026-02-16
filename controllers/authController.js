@@ -1,36 +1,92 @@
-const bcrypt = require("bcrypt");
-const { User } = require("../models");
-const generateToken = require("../utils/generateToken");
+const { Expense, User } = require("../models");
+const { Sequelize } = require("sequelize");
 
-/* ===== SIGNUP ===== */
-exports.signup = async (req, res) => {
-  const { name, email, password } = req.body;
+/* ===== GET USER EXPENSES ===== */
+const getExpenses = async (req, res) => {
+  try {
+    const expenses = await Expense.findAll({
+      where: { UserId: req.user.id },
+      order: [["createdAt", "DESC"]],
+    });
 
-  const existing = await User.findOne({ where: { email } });
-  if (existing) return res.status(403).json({ message: "Email already exists" });
-
-  const hash = await bcrypt.hash(password, 10);
-
-  const user = await User.create({ name, email, password: hash });
-
-  res.status(201).json({
-    token: generateToken(user.id),
-    user: { id: user.id, name: user.name, email: user.email },
-  });
+    res.json(expenses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch expenses" });
+  }
 };
 
-/* ===== LOGIN ===== */
-exports.login = async (req, res) => {
-  const { email, password } = req.body;
+/* ===== CREATE EXPENSE ===== */
+const createExpense = async (req, res) => {
+  try {
+    const expense = await Expense.create({
+      ...req.body,
+      UserId: req.user.id,
+    });
 
-  const user = await User.findOne({ where: { email } });
-  if (!user) return res.status(401).json({ message: "Invalid email" });
+    res.status(201).json(expense);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create expense" });
+  }
+};
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ message: "Invalid password" });
+/* ===== DELETE EXPENSE ===== */
+const deleteExpense = async (req, res) => {
+  try {
+    const expense = await Expense.findOne({
+      where: { id: req.params.id, UserId: req.user.id },
+    });
 
-  res.json({
-    token: generateToken(user.id),
-    user: { id: user.id, name: user.name, email: user.email },
-  });
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    await expense.destroy();
+    res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete expense" });
+  }
+};
+
+/* ===== FIXED LEADERBOARD ===== */
+const getLeaderboard = async (req, res) => {
+  try {
+    const leaderboardOfUsers = await User.findAll({
+      attributes: [
+        "id",
+        "name",
+        [
+          Sequelize.fn(
+            "COALESCE",
+            Sequelize.fn("SUM", Sequelize.col("Expenses.amount")),
+            0
+          ),
+          "total_cost",
+        ],
+      ],
+      include: [
+        {
+          model: Expense,
+          attributes: [],
+          required: false, // IMPORTANT → keeps users with 0 expenses
+        },
+      ],
+      group: ["User.id"],
+      order: [[Sequelize.literal("total_cost"), "DESC"]],
+    });
+
+    res.status(200).json(leaderboardOfUsers);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to load leaderboard" });
+  }
+};
+
+module.exports = {
+  getExpenses,
+  createExpense,
+  deleteExpense,
+  getLeaderboard,
 };
