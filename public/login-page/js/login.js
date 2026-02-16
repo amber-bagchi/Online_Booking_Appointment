@@ -1,13 +1,13 @@
 const form = document.getElementById("loginForm");
 const API = "http://localhost:3000/api/login";
 
-// PASSWORD TOGGLE
+/* ===== PASSWORD TOGGLE ===== */
 function togglePassword() {
   const pass = document.getElementById("password");
   pass.type = pass.type === "password" ? "text" : "password";
 }
 
-// SUBMIT
+/* ===== FORM SUBMIT ===== */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -34,21 +34,29 @@ form.addEventListener("submit", async (e) => {
   try {
     const res = await axios.post(API, { email, password });
 
-    
-    localStorage.setItem("token", res.data.token || "dummy-token");
-    localStorage.setItem("userEmail", email);
+    /* ✅ STORE TOKEN */
+    const token = res.data.token;
+
+    if (!token) {
+      showToast("Token not received ❌", "#ff4d4d");
+      return;
+    }
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("userEmail", res.data.user.email);
 
     showToast("Login successful 🎉 Redirecting...", "#4CAF50");
 
     setTimeout(() => {
       window.location.href = "../dashboard/dashboard.html";
-    }, 1500);
+    }, 1200);
+
   } catch (err) {
     showToast(err.response?.data?.message || "Login failed ❌", "#ff4d4d");
   }
 });
 
-// TOAST
+/* ===== TOAST ===== */
 function showToast(message, color) {
   let toast = document.getElementById("toast");
 
@@ -61,10 +69,8 @@ function showToast(message, color) {
   toast.textContent = message;
   toast.style.background = color;
   toast.style.display = "block";
-  toast.style.opacity = "1";
 
   setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => (toast.style.display = "none"), 300);
-  }, 2500);
+    toast.style.display = "none";
+  }, 1500);
 }

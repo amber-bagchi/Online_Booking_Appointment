@@ -4,74 +4,84 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expense Dashboard</title>
+
     <link rel="stylesheet" href="./dashboard.css" />
   </head>
+
   <body>
     <!-- NAVBAR -->
-    <nav class="navbar">
-      <h2>💰 Expense Tracker</h2>
-      <button onclick="logout()">Logout</button>
-    </nav>
+    <header class="navbar">
+      <div class="logo">💰 Expense Tracker</div>
 
-    <!-- MAIN CONTAINER -->
-    <div class="container">
-      <!-- EXPENSE FORM -->
-      <div class="card form-card">
-        <h3>Add Daily Expense</h3>
+      <nav>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </nav>
+    </header>
+
+    <!-- MAIN WRAPPER -->
+    <main class="wrapper">
+      <!-- EXPENSE FORM CARD -->
+      <section class="card form-card">
+        <h2>Add Daily Expense</h2>
 
         <form id="expenseForm">
-          <input
-            type="number"
-            id="amount"
-            placeholder="Amount spent"
-            required
-          />
+          <div class="grid">
+            <input
+              type="number"
+              id="amount"
+              placeholder="Amount spent"
+              required
+            />
 
-          <input
-            type="text"
-            id="description"
-            placeholder="Description"
-            required
-          />
+            <input
+              type="text"
+              id="description"
+              placeholder="Description"
+              required
+            />
 
-          <!-- CATEGORY -->
-          <select id="category" required>
-            <option value="">Select Category</option>
-            <option>Food</option>
-            <option>Petrol</option>
-            <option>Shopping</option>
-            <option>Salary</option>
-            <option>Travel</option>
-          </select>
+            <input type="date" id="date" required />
 
-          <!-- CURRENCY SCROLL -->
-          <select id="currency">
-            <option>₹ INR</option>
-            <option>$ USD</option>
-            <option>€ Euro</option>
-            <option>£ Pound</option>
-          </select>
+            <select id="category" required>
+              <option value="">Select Category</option>
+              <option>Food</option>
+              <option>Petrol</option>
+              <option>Shopping</option>
+              <option>Salary</option>
+              <option>Travel</option>
+            </select>
 
-          <!-- PAYMENT METHOD -->
-          <select id="payment">
-            <option value="">Payment Method</option>
-            <option>Cash</option>
-            <option>UPI</option>
-            <option>Net Banking</option>
-            <option>Card</option>
-          </select>
+            <select id="currency">
+              <option>₹ INR</option>
+              <option>$ USD</option>
+              <option>€ Euro</option>
+              <option>£ Pound</option>
+            </select>
 
-          <button type="submit">➕ Add Expense</button>
+            <select id="payment" required>
+              <option value="">Payment Method</option>
+              <option>Cash</option>
+              <option>UPI</option>
+              <option>Net Banking</option>
+              <option>Card</option>
+            </select>
+          </div>
+
+          <button type="submit" class="add-btn">➕ Add Expense</button>
         </form>
-      </div>
+      </section>
 
-      <!-- EXPENSE LIST -->
-      <div class="card list-card">
-        <h3>Your Expenses</h3>
+      <!-- EXPENSE LIST CARD -->
+      <section class="card list-card">
+        <h2>Your Expenses</h2>
         <ul id="expenseList"></ul>
-      </div>
-    </div>
+      </section>
+    </main>
+
+    <!-- AXIOS -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- SCRIPT -->
     <script src="./dashboard.js"></script>
   </body>
 </html>

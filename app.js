@@ -3,10 +3,11 @@ const app = express();
 const cors = require("cors");
 const routes = require("./routes/userRoutes");
 const sequelize = require("./utils/db");
-
+const expenseRoutes = require("./routes/expenseRoutes");
 app.use(cors());
 app.use(express.json());
-app.use('/api', routes);
+app.use("/api", routes);
+app.use("/api/expenses", expenseRoutes);
 
 async function startServer() {
   try {

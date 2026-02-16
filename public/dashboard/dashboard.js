@@ -1,95 +1,126 @@
 /* ================= CONFIG ================= */
 const API = "http://localhost:3000/api/expenses";
 
-
 const form = document.getElementById("expenseForm");
 const list = document.getElementById("expenseList");
 
-
+/* ================= AUTH CHECK ================= */
 const token = localStorage.getItem("token");
 
 if (!token) {
   window.location.href = "../login-page/login.html";
 }
 
-
+/* ================= AXIOS INSTANCE ================= */
 const api = axios.create({
   baseURL: API,
   headers: {
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
-    Authorization: token ? `Bearer ${token}` : "",
   },
 });
 
-
+/* ================= LOAD EXPENSES ================= */
 async function loadExpenses() {
   try {
-    const res = await api.get("/");
-    const data = res.data;
+    const res = await api.get("/getExpense");
 
     list.innerHTML = "";
 
-    data.forEach((exp) => {
+    res.data.forEach((exp) => {
       const li = document.createElement("li");
 
       li.innerHTML = `
         <span>
-          ${exp.amount} ${exp.currency} - ${exp.description}
+          <strong>${exp.amount} ${exp.currency}</strong> - ${exp.description}
           <br/>
-          <small>${exp.category} • ${exp.payment}</small>
+          <small>
+            📅 ${formatDate(exp.date)} • ${exp.category} • ${exp.payment}
+          </small>
         </span>
         <button class="delete-btn" onclick="deleteExpense(${exp.id})">X</button>
       `;
 
       list.appendChild(li);
     });
+
   } catch (err) {
-    showToast("Failed to load expenses ❌", "#ff4d4d");
+    handleAuthError(err);
   }
 }
 
-
+/* ================= ADD EXPENSE ================= */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const expense = {
     amount: document.getElementById("amount").value,
     description: document.getElementById("description").value,
+    date: document.getElementById("date").value,
     category: document.getElementById("category").value,
     currency: document.getElementById("currency").value,
     payment: document.getElementById("payment").value,
   };
 
   try {
-    await api.post("/", expense);
+    await api.post("/addExpense", expense);
 
-    showToast("Expense added ✅", "#4CAF50");
+    showToast("Expense added successfully ✅", "#4CAF50");
 
     form.reset();
     loadExpenses();
+
   } catch (err) {
-    showToast("Failed to add expense ❌", "#ff4d4d");
+    handleAuthError(err);
   }
 });
 
-
+/* ================= DELETE EXPENSE ================= */
 async function deleteExpense(id) {
   try {
-    await api.delete(`/${id}`);
+    await api.delete(`/deleteExpense/${id}`);
+
     showToast("Expense deleted 🗑️", "#ff4d4d");
+
     loadExpenses();
+
   } catch (err) {
-    showToast("Delete failed ❌", "#ff4d4d");
+    handleAuthError(err);
   }
 }
 
-
+/* ================= LOGOUT ================= */
 function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("userEmail");
+
   window.location.href = "../login-page/login.html";
 }
 
+/* ================= FORMAT DATE ================= */
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-IN");
+}
 
+/* ================= HANDLE 401 ================= */
+function handleAuthError(err) {
+  if (err.response?.status === 401) {
+    showToast("Session expired. Please login again 🔒", "#ff4d4d");
+
+    localStorage.removeItem("token");
+
+    setTimeout(() => {
+      window.location.href = "../login-page/login.html";
+    }, 1200);
+
+    return;
+  }
+
+  showToast("Something went wrong ❌", "#ff4d4d");
+}
+
+/* ================= TOAST ================= */
 function showToast(message, color) {
   let toast = document.getElementById("toast");
 
@@ -106,9 +137,11 @@ function showToast(message, color) {
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    setTimeout(() => (toast.style.display = "none"), 300);
-  }, 2500);
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 300);
+  }, 1500);
 }
 
-
+/* ================= INIT ================= */
 loadExpenses();
