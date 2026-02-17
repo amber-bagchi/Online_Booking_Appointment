@@ -252,3 +252,10 @@ select {
   to { transform: rotate(360deg); }
 }
 
+#aiInsightText {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #fffde7;
+}
+
+

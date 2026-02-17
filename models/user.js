@@ -13,6 +13,17 @@ const User = sequelize.define("User", {
     allowNull: false,
     defaultValue: 0,
   },
+  
+  otp: {
+  type: DataTypes.STRING,
+  allowNull: true,
+  },
+
+  otpExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+
 });
 
 module.exports = User;

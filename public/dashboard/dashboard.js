@@ -26,6 +26,10 @@ const category = document.getElementById("category");
 const aiHint = document.getElementById("aiHint");
 const aiLoader = document.getElementById("aiLoader");
 
+const aiInsightSection = document.getElementById("aiInsightSection");
+const aiBtn = document.getElementById("aiBtn");
+
+
 /* LOAD EXPENSES */
 async function loadExpenses() {
   try {
@@ -106,17 +110,26 @@ async function loadLeaderboard() {
 function showTransactions() {
   transactionsSection.style.display = "block";
   leaderboardSection.style.display = "none";
+  aiInsightSection.style.display = "none";
+
   txnBtn.classList.add("active");
   lbBtn.classList.remove("active");
+  aiBtn.classList.remove("active");
 }
+
 
 function showLeaderboard() {
   transactionsSection.style.display = "none";
   leaderboardSection.style.display = "block";
+  aiInsightSection.style.display = "none";
+
   lbBtn.classList.add("active");
   txnBtn.classList.remove("active");
+  aiBtn.classList.remove("active");
+
   loadLeaderboard();
 }
+
 
 /* AI CATEGORY DETECTION */
 async function autoDetectCategory() {
@@ -142,6 +155,35 @@ async function autoDetectCategory() {
   }
 }
 
+async function loadAIInsight() {
+  try {
+    const res = await axios.get(
+      "http://localhost:3000/api/insight/monthly-insight",
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    document.getElementById("aiInsightText").innerText = res.data.insight;
+
+  } catch (err) {
+    console.error("AI insight error", err);
+    document.getElementById("aiInsightText").innerText =
+      "Failed to load AI insight.";
+  }
+}
+
+function showAIInsight() {
+  transactionsSection.style.display = "none";
+  leaderboardSection.style.display = "none";
+  aiInsightSection.style.display = "block";
+
+  txnBtn.classList.remove("active");
+  lbBtn.classList.remove("active");
+  aiBtn.classList.add("active");
+
+  loadAIInsight();
+}
+
+
 /* Trigger AI on blur */
 description.addEventListener("blur", autoDetectCategory);
 
@@ -163,6 +205,11 @@ function formatDate(d) {
 function handleAuthError(err) {
   if (err.response?.status === 401) logout();
 }
+
+function goToInsights() {
+  window.location.href = "../insights/insights.html";
+}
+
 
 /* INIT */
 loadExpenses();
