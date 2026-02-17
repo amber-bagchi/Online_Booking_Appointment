@@ -1,22 +1,16 @@
-/* ================= CONFIG ================= */
+/* CONFIG */
 const API = "http://localhost:3000/api/expenses";
 const token = localStorage.getItem("token");
 
-/* ================= AUTH CHECK ================= */
-if (!token) {
-  window.location.href = "../login-page/login.html";
-}
+if (!token) window.location.href = "../login-page/login.html";
 
-/* ================= AXIOS ================= */
+/* AXIOS */
 const api = axios.create({
   baseURL: API,
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  },
+  headers: { Authorization: `Bearer ${token}` },
 });
 
-/* ================= DOM ================= */
+/* DOM */
 const form = document.getElementById("expenseForm");
 const list = document.getElementById("expenseList");
 const leaderboardBody = document.getElementById("leaderboardBody");
@@ -27,16 +21,19 @@ const leaderboardSection = document.getElementById("leaderboardSection");
 const txnBtn = document.getElementById("txnBtn");
 const lbBtn = document.getElementById("lbBtn");
 
-/* ================= LOAD EXPENSES ================= */
+const description = document.getElementById("description");
+const category = document.getElementById("category");
+const aiHint = document.getElementById("aiHint");
+const aiLoader = document.getElementById("aiLoader");
+
+/* LOAD EXPENSES */
 async function loadExpenses() {
   try {
     const res = await api.get("/getExpense");
-
     list.innerHTML = "";
 
     res.data.forEach((exp) => {
       const li = document.createElement("li");
-
       li.innerHTML = `
         <span>
           <strong>${exp.amount} ${exp.currency}</strong> - ${exp.description}
@@ -45,16 +42,14 @@ async function loadExpenses() {
         </span>
         <button class="delete-btn" onclick="deleteExpense(${exp.id})">X</button>
       `;
-
       list.appendChild(li);
     });
-
   } catch (err) {
     handleAuthError(err);
   }
 }
 
-/* ================= ADD EXPENSE ================= */
+/* ADD EXPENSE */
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -69,16 +64,15 @@ form.addEventListener("submit", async (e) => {
 
   try {
     await api.post("/addExpense", expense);
-
     form.reset();
+    aiHint.style.display = "none";
     loadExpenses();
-
   } catch (err) {
     handleAuthError(err);
   }
 });
 
-/* ================= DELETE ================= */
+/* DELETE */
 async function deleteExpense(id) {
   try {
     await api.delete(`/deleteExpense/${id}`);
@@ -88,35 +82,30 @@ async function deleteExpense(id) {
   }
 }
 
-/* ================= LEADERBOARD ================= */
+/* LEADERBOARD */
 async function loadLeaderboard() {
   try {
     const res = await api.get("/leaderboard");
-
     leaderboardBody.innerHTML = "";
 
     res.data.forEach((u, i) => {
       const row = document.createElement("tr");
-
       row.innerHTML = `
         <td>${i + 1}</td>
         <td>${u.name}</td>
         <td>₹ ${u.total_cost}</td>
       `;
-
       leaderboardBody.appendChild(row);
     });
-
   } catch (err) {
     handleAuthError(err);
   }
 }
 
-/* ================= NAVIGATION ================= */
+/* NAVIGATION */
 function showTransactions() {
   transactionsSection.style.display = "block";
   leaderboardSection.style.display = "none";
-
   txnBtn.classList.add("active");
   lbBtn.classList.remove("active");
 }
@@ -124,14 +113,44 @@ function showTransactions() {
 function showLeaderboard() {
   transactionsSection.style.display = "none";
   leaderboardSection.style.display = "block";
-
   lbBtn.classList.add("active");
   txnBtn.classList.remove("active");
-
   loadLeaderboard();
 }
 
-/* ================= UTIL ================= */
+/* AI CATEGORY DETECTION */
+async function autoDetectCategory() {
+  const desc = description.value.trim();
+  if (!desc) return;
+
+  try {
+    aiLoader.style.display = "block";
+    aiHint.style.display = "none";
+
+    const res = await axios.post(
+      "http://localhost:3000/api/ai/predict-category",
+      { description: desc },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    category.value = res.data.category;
+    aiHint.style.display = "inline";
+  } catch (err) {
+    console.error("AI prediction error", err);
+  } finally {
+    aiLoader.style.display = "none";
+  }
+}
+
+/* Trigger AI on blur */
+description.addEventListener("blur", autoDetectCategory);
+
+/* Hide hint if user changes category manually */
+category.addEventListener("change", () => {
+  aiHint.style.display = "none";
+});
+
+/* UTIL */
 function logout() {
   localStorage.clear();
   window.location.href = "../login-page/login.html";
@@ -141,13 +160,9 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString("en-IN");
 }
 
-/* ================= AUTH ERROR ================= */
 function handleAuthError(err) {
-  if (err.response?.status === 401) {
-    localStorage.clear();
-    window.location.href = "../login-page/login.html";
-  }
+  if (err.response?.status === 401) logout();
 }
 
-/* ================= INIT ================= */
+/* INIT */
 loadExpenses();

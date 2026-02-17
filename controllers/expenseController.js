@@ -1,6 +1,6 @@
 const { Expense, User } = require("../models");
 const { Sequelize } = require("sequelize");
-
+const sequelize = require("../utils/db");
 /* ===== GET USER EXPENSES ===== */
 const getExpenses = async (req, res) => {
   try {

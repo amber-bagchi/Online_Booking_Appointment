@@ -1,5 +1,5 @@
 const form = document.getElementById("loginForm");
-const API = "http://localhost:3000/api/login";
+const API = "http://localhost:3000/api/users/login";
 
 /* ===== PASSWORD TOGGLE ===== */
 function togglePassword() {

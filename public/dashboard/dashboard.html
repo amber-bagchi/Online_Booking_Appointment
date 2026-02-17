@@ -9,15 +9,14 @@
   </head>
 
   <body>
-    <!-- ===== NAVBAR ===== -->
+    <!-- NAVBAR -->
     <header class="navbar">
       <div class="logo">💰 Expense Tracker</div>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </header>
 
-    <!-- ===== MAIN LAYOUT ===== -->
     <div class="layout">
-      <!-- ===== SIDEBAR ===== -->
+      <!-- SIDEBAR -->
       <aside class="sidebar">
         <button
           id="txnBtn"
@@ -31,9 +30,9 @@
         </button>
       </aside>
 
-      <!-- ===== CONTENT ===== -->
+      <!-- CONTENT -->
       <main class="content">
-        <!-- ===== TRANSACTIONS ===== -->
+        <!-- TRANSACTIONS -->
         <section id="transactionsSection">
           <div class="card form-card">
             <h2>Add Daily Expense</h2>
@@ -46,12 +45,18 @@
                   placeholder="Amount spent"
                   required
                 />
-                <input
-                  type="text"
-                  id="description"
-                  placeholder="Description"
-                  required
-                />
+
+                <div class="ai-field">
+                  <input
+                    type="text"
+                    id="description"
+                    placeholder="Description"
+                    required
+                  />
+                  <small id="aiHint">✨ AI detected category</small>
+                  <div id="aiLoader" class="loader"></div>
+                </div>
+
                 <input type="date" id="date" required />
 
                 <select id="category" required>
@@ -61,6 +66,7 @@
                   <option>Shopping</option>
                   <option>Salary</option>
                   <option>Travel</option>
+                  <option>Other</option>
                 </select>
 
                 <select id="currency">
@@ -89,11 +95,10 @@
           </div>
         </section>
 
-        <!-- ===== LEADERBOARD ===== -->
+        <!-- LEADERBOARD -->
         <section id="leaderboardSection" style="display: none">
           <div class="card">
             <h2>🏆 Leaderboard</h2>
-
             <table class="leaderboard-table">
               <thead>
                 <tr>
