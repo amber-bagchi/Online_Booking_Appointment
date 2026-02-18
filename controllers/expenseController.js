@@ -88,10 +88,39 @@ const getLeaderboard = async (req, res) => {
   }
 };
 
+/* ===== PAGINATED EXPENSES ===== */
+const getPaginatedExpenses = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Expense.findAndCountAll({
+      where: { UserId: req.user.id },
+      order: [["date", "DESC"]],
+      limit,
+      offset,
+    });
+
+    res.json({
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalExpenses: count,
+      expenses: rows,
+    });
+  } catch (err) {
+    console.error("PAGINATION ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch paginated expenses" });
+  }
+};
+
+
 
 module.exports = {
   getExpenses,
   createExpense,
   deleteExpense,
   getLeaderboard,
+  getPaginatedExpenses
 };

@@ -206,9 +206,10 @@ function handleAuthError(err) {
   if (err.response?.status === 401) logout();
 }
 
-function goToInsights() {
-  window.location.href = "../insights/insights.html";
+function goToFinancialPage() {
+  window.location.href = "../financial-insight/financial.html";
 }
+
 
 
 /* INIT */
